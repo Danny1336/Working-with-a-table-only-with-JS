@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='tablesort.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="src/jquery-3.3.1.slim.min.js"></script>
+    <script type="text/javascript" src="src/jspdf.min.js"></script>
+    <script type="text/javascript" src="src/jspdf.plugin.autotable.min.js"></script>
+    <script type="text/javascript" src="src/tableHTMLExport.js"></script>
+
+    <style>
+        *{
+            font-size: 1.2rem;
+        }
+        .content{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .addschoolboy{
+            display: flex;
+            flex-direction: column;
+            width: 550px;
+        }
+        button {
+            width: 550px;
+            line-height: 1;
+            display: inline-block;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            color: #fff;
+            padding: 8px;
+            background-color: #4b908f;
+        }
+        .table {
+            width: 550px;
+            margin-bottom: 20px;
+            border: 5px solid #fff;
+            border-top: 5px solid #fff;
+            border-bottom: 3px solid #fff;
+            border-collapse: collapse; 
+            outline: 3px solid #4b908f;
+            font-size: 15px;
+            background: #fff!important;
+        }
+        .table th {
+            font-weight: bold;
+            padding: 7px;
+            background: #4b908f;
+            border: none;
+            text-align: left;
+            font-size: 15px;
+            border-top: 3px solid #fff;
+            border-bottom: 3px solid #4b908f;
+        }
+        .table td {
+            padding: 7px;
+            border: none;
+            border-top: 3px solid #fff;
+            border-bottom: 3px solid #fff;
+            font-size: 15px;
+        }
+        .table tbody tr:nth-child(even){
+            background: #f8f8f8!important;
+        }
+        th[role=columnheader]:not(.no-sort) {
+	    cursor: pointer;
+        }
+
+    th[role=columnheader]:not(.no-sort):after {
+        content: '';
+        float: right;
+        margin-top: 7px;
+        border-width: 0 4px 4px;
+        border-style: solid;
+        border-color: #404040 transparent;
+        visibility: hidden;
+        opacity: 0;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    th[aria-sort=ascending]:not(.no-sort):after {
+        border-bottom: none;
+        border-width: 4px 4px 0;
+    }
+
+    th[aria-sort]:not(.no-sort):after {
+        visibility: visible;
+        opacity: 0.4;
+    }
+
+    th[role=columnheader]:not(.no-sort):hover:after {
+        visibility: visible;
+        opacity: 1;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <table id="table" class="table" >
+            <thead>
+                <tr>
+                    <th>Фамилия</th>
+                    <th data-sort-method='none' >Имя</th>
+                    <th data-sort-method='none'>Отчество</th>
+                    <th>Год рождения</th>
+                    <th data-sort-method='none'>Класс</th>
+                    <th data-sort-method='none'>Удаление</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Владимиров</td>
+                    <td>Владимир</td>
+                    <td>Владимирович</td>
+                    <td>2002-02-02</td>
+                    <td>1</td>
+                    <td><input type="checkbox" id="select-row"></td>
+                </tr>
+
+                <tr>
+                    <td>Алешин</td>
+                    <td>Алеша</td>
+                    <td>Алешавич</td>
+                    <td>2002-02-02</td>
+                    <td>1</td>
+                    <td><input type="checkbox" id="select-row"></td>
+                </tr>
+                <tr>
+                    <td>Иванов</td>
+                    <td>Иван</td>
+                    <td>Иванович</td>
+                    <td>2002-02-02</td>
+                    <td>1</td>
+                    <td><input type="checkbox" id="select-row"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="delbtn">Удалить выбранные</button>
+        <div class="addschoolboy">
+            <h1>Добавить ученика</h1>
+            <input type="text" class="lastname" placeholder="Фамилия">
+            <input type="text" class="name" placeholder="Имя">
+            <input type="text" class="midname" placeholder="Отчество">
+            <input type="date" class="born" placeholder="Год рождения">
+            <input type="text" class="clss" placeholder="Класс">   
+            <button class="add-row">Добавить студента</button>
+            <button class="btn btn-success" id="json">Сохранить в Json</button>
+        </div>
+    </div>
+    <! - Скрипт для добавления строки таблицы ->
+        <script>
+            $(document).ready(function () {  
+                $(".add-row").click(function () { 
+                var Lastname = $('input.lastname').val();
+                var Name = $('input.name').val();
+                var Midname = $('input.midname').val();
+                var Born = $('input.born').val();
+                var Clss = $('input.clss').val();
+
+                $(".table tbody tr").last().after(
+                    '<tr>'+
+                        '<td>'+Lastname+'</td>'+
+                        '<td>'+Name+'</td>'+
+                        '<td>'+Midname+'</td>'+
+                        '<td>'+Born+'</td>'+
+                        '<td>'+Clss+'</td>'+
+                        '<td><input type="checkbox" id="select-row"></td>'+
+                    '</tr>'  
+                );
+                });
+
+                $("#delbtn").click(function(){
+                $(".table tbody tr").each(function(){
+                    var isChecked = $(this).find('input[type="checkbox"]').is(":checked");
+                    var tableSize = $(".table tbody tr").length;
+                    if(tableSize == 1){
+                        alert('All rows cannot be deleted.');
+                    }else if(isChecked){
+                        $(this).remove();
+                    }
+                });
+            });
+            }); 
+        </script>
+        <script>
+            $("#json").on("click",function(){
+            $("#table").tableHTMLExport({
+            type:'json',
+            filename:'sample.json'
+            });
+            });
+        </script>
+        <script>
+            new Tablesort(document.getElementById('table'));
+        </script>
+        
+</body>
+</html>
