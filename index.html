@@ -185,7 +185,7 @@
                     var isChecked = $(this).find('input[type="checkbox"]').is(":checked");
                     var tableSize = $(".table tbody tr").length;
                     if(tableSize == 1){
-                        alert('All rows cannot be deleted.');
+                        alert('Все строки не могут быть удалены.');
                     }else if(isChecked){
                         $(this).remove();
                     }
